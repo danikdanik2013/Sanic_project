@@ -7,14 +7,11 @@ client = pymongo.MongoClient()
 db = client.test_db
 collection = db.users_collection
 
-def foo():
-    print("bar")
-
 
 class RegistationForm(HTTPMethodView):
 
     async def get(self, request):
-        return json({"Sorry": "Its get request"}), 400
+        return json({"Sorry": "Its get request"})
 
     print('hello')
 
@@ -22,20 +19,16 @@ class RegistationForm(HTTPMethodView):
         data = request.json
         user = data.get('username')
         email = data.get('email')
-
-        # def check_indentification(user, email):
-        #     #flag = False
-        #     check_user = db.find({'user': user})
-        #     check_email = db.find({'email': email})
-        #     if check_email is None and check_user is None:
-        #         return True
-        #     return flag
-
-        #check = check_indentification(user, email)
-
-        # if check is True:
-        check_user = db.get.collection.find({'username': user})
-        print(check_user)
+        check_user = db.users.find({'username': user})
+        for x in check_user:
+            print(1)
+            if x is not None:
+                return json({'Change username': "please"})
+        check_mail = db.users.find({'email': email})
+        for z in check_mail:
+            print(z)
+            if z is not None:
+                return json({'Change email': "please"})
         if check_user is not None:
             print('12312')
         password = data.get('password')
@@ -49,5 +42,4 @@ class RegistationForm(HTTPMethodView):
         users.insert_one(user_form_to_db)
 
         return json({"Method": "POST"})
-    #else:
-     #   return json({'Sorry': "Enter another pass or email"}), 401
+
