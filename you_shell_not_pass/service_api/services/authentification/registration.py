@@ -2,9 +2,13 @@ import pymongo
 from sanic.response import json
 from sanic.views import HTTPMethodView
 
-
-client = pymongo.MongoClient()
-db = client.test_db
+MONGO_HOST = "mongodb"
+MONGO_PORT = 27017
+MONGO_DB = "test_db"
+client = pymongo.MongoClient(MONGO_HOST, MONGO_PORT)
+print(client)
+db = client[MONGO_DB]
+print(db)
 collection = db.users_collection
 
 
