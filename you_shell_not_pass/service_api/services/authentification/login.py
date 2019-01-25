@@ -1,9 +1,10 @@
 from sanic import response
+from sanic.views import HTTPMethodView
 from sanic_auth import Auth
+from service_api.app import app
 
-from service_api1.app import app, db
+from .registration import db
 
-#
 # app = Sanic(__name__)
 # app.config.AUTH_LOGIN_ENDPOINT = 'login'
 #
@@ -15,25 +16,26 @@ from service_api1.app import app, db
 auth = Auth(app)
 
 
-@app.route('/login', methods=['GET', 'POST'])
-async def login(request):
-    message = ''
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        # fetch user from database
-        user = db.get(name=username)
-        if user and user.check_password(password):
-            auth.login_user(request, user)
-            return response.redirect('/profile')
-    return response.json({'Its': 'work'})
+class LoginForm(HTTPMethodView):
+    async def login(self, request):
+        message = ''
+        if request.method == 'POST':
+            data = request.json
+            user = data.get('username')
+            password = data.get('password')
+            # fetch user from database
+            user = db.users.find({'username': user})
+            if user and user.check_password(password):
+                auth.login_user(request, user)
+                return response.redirect('/profile')
+        return response.json({'Its': 'work'})
 
 
-@app.route('/logout')
-@auth.login_required
-async def logout(request):
-    auth.logout_user(request)
-    return response.redirect('/login')
+class LogoutForm(HTTPMethodView):
+    @auth.login_required
+    async def logout(self, request):
+        auth.logout_user(request)
+        return response.json({'You': "logout"})
 
 
 # @app.route('/profile')

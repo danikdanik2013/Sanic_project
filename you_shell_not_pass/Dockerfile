@@ -3,7 +3,7 @@ FROM python:3.6-stretch
 WORKDIR /you_shell_not_pass
 COPY . /you_shell_not_pass
 
-EXPOSE 80
+# EXPOSE 80
 
 WORKDIR /you_shell_not_pass/
 RUN pip install --trusted-host pypi.python.org -r requirements/requirements.txt
