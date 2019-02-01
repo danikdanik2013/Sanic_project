@@ -1,62 +1,30 @@
-version: '3'
-services:
+#version: '3'
+#services:
 #  nginx:
 #    restart: always
 #    image: nginx:stable
 #    container_name: "nginx"
 #    volumes:
-#      - ./nginx.conf:/etc/nginx/conf.d
-#      - ./you_shell_not_pass:/usr/scr/app
+#      ./nginx:/etc/nginx/conf.d
 #    ports:
 #      - '8880:80'
 #    links:
 #      - web
-
-  web:
-    restart: always
-    container_name: web
-    build: you_shell_not_pass
-    volumes:
-      - ./you_shell_not_pass:/usr/scr/app
-    ports:
-      - 5000:5000
-    links:
-     - mongodb
-    depends_on:
-     - mongodb
-
-
-
-  mongodb:
-    restart: always
-    image: mongo:4.0.5-xenial
-    container_name: "mongodb"
-    environment:
-      - MONGO_DATA_DIR=/data/db
-      - MONGO_LOG_DIR=/dev/null
-    volumes:
-      - ./data/db:/data/db
-    ports:
-      - "27017:27017"
-    command: mongod --smallfiles --logpath=/dev/null # --quiet
-
-
-
-#version: '3.7'
-#networks:
-#  web:
-#    driver: bridge
-#  internal:
-#    driver: bridge
 #
-#services:
-#  redis:
-#    container_name: test_redis
-#    image: "redis:latest"
+#  web:
+#    restart: always
+#    container_name: web
+#    build: you_shell_not_pass
 #    volumes:
-#      - ${PWD} .data/redis:/data
-#    networks:
-#      - internal
+#      - ./you_shell_not_pass:/usr/scr/app
+#    ports:
+#      - 5000:5000
+#    links:
+#     - mongodb
+#    depends_on:
+#     - mongodb
+#
+#
 #
 #  mongodb:
 #    restart: always
@@ -70,29 +38,63 @@ services:
 #    ports:
 #      - "27017:27017"
 #    command: mongod --smallfiles --logpath=/dev/null # --quiet
-#    networks:
-#      - internal
-#
-#
-#  web:
-#    restart: always
-#    container_name: web
-#    build: you_shell_not_pass
-#    volumes:
-#      - ./you_shell_not_pass:/usr/scr/app
-#    networks:
-#      - internal
-#
-#  nginx:
-#    container_name: test_nginx
-#    image: "nginx:stable"
-#    ports:
-#      - "6000:80"
-#    volumes:
-#      - ./nginx:/urs/local/etc/nginx/nginx.conf
-#    networks:
-#      - web
-#      - internal
-#
-#    links:
-#      - web
+#./nginx:/etc/nginx/conf:
+#  d:
+
+
+version: "3.7"
+networks:
+  web:
+    driver: bridge
+  internal:
+    driver: bridge
+
+services:
+  redis:
+    container_name: test_redis
+    image: "redis:latest"
+    volumes:
+      - ${PWD} .data/redis:/data
+    networks:
+      - internal
+
+  mongodb:
+    restart: always
+    image: "mongo:4.0.5-xenial"
+    container_name: test_mongodb
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ./data/db:/data/db
+    ports:
+      - "27017:27017"
+    command: mongod --smallfiles --logpath=/dev/null # --quiet
+    networks:
+      - internal
+
+
+  web_app:
+    restart: always
+    container_name: test_web_app
+    build: you_shell_not_pass
+    volumes:
+      - ./you_shell_not_pass:/usr/scr/app
+    networks:
+      - internal
+    links:
+      - "mongodb"
+
+  nginx:
+    container_name: test_nginx
+    image: "nginx:stable"
+    ports:
+      - "6000:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      - web
+      - internal
+
+    links:
+      - web_app
