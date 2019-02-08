@@ -1,8 +1,15 @@
 from sanic.response import json
 from sanic.views import HTTPMethodView
+from sanic_auth import User
 
+from service_api.app import app, session
 from service_api.app import auth
 from .registration import db
+
+
+@app.middleware('request')
+async def add_session(request):
+    request['session'] = session
 
 
 class LoginForm(HTTPMethodView):
@@ -11,38 +18,50 @@ class LoginForm(HTTPMethodView):
         return json({'change': 'method'})
 
     async def post(self, request):
-        # TODO Add session to login and rebuild login logic
-        message = ''
+
+        if len(session) != 0:
+            return json({'pleas': 'logout'})
         data = request.json
         user = data.get('username')
-        print('*'*100, user, '*'*100)
         password = data.get('password')
-        print('*'*100, password, '*'*100)
-        # fetch user from database
-        user_in_db = db.users.find({'username': user})
-        password_in_db = db.users.find({'password': password})
-        user_for_check = {}
-        for username in user_in_db:
-            if username is None:
-                return json({"User": "is not avaliable"})
-            else:
-                print('123')
 
-        print('*'*100, user, '*'*100)
-        if user and user.check_password(password):
-            auth.login_user(request, user)
-            return json({'you': 'login'})
-        return json({'Error': '!!!!'})
+        # fetch user from database
+
+        check_user = db.users.find({'username': user})
+        password_in_db = db.users.find({'password': password})
+
+        if check_user.count() == 0:
+            return json({'User ': "Not found"})
+        for x in password_in_db:
+            password_mongo = x.get('password')
+            username = x.get('username')
+            if password_mongo == password and user == username:
+                user = User(id=1, name=username)
+                auth.login_user(request, user)
+
+                return json({'Your are ': 'login'})
+
+        # message = 'invalid username or password'
+        return json({'11': '22'})
 
 
 class LogoutForm(HTTPMethodView):
-    @auth.login_required
-    async def logout(self, request):
+
+    async def post(self, request):
+        if len(session) == 0:
+            return json({'pleas': 'login'})
         auth.logout_user(request)
-        return json({'You': "logout"})
+        return json({'yesh': '1'})
 
 
-# @app.route('/profile')
-# @auth.login_required(user_keyword='user')
-# async def profile(request, user):
-#     return response.json({'user': user})
+class UserForm(HTTPMethodView):
+
+    async def get(self, request):
+        if len(session) == 0:
+            return json({'pleas': 'login'})
+        data = request.json
+        return json({'test': data})
+
+#
+# def handle_no_auth(request):
+#     return response.json(dict(message='unauthorized'), status=401)
