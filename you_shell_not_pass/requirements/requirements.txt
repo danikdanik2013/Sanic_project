@@ -49,7 +49,7 @@ toolz==0.9.0
 tqdm==4.29.1
 traitlets==4.3.2
 ujson==1.35
-urllib3==1.24.1
+urllib3==1.24.2
 uvloop==0.11.3
 vine==1.2.0
 wcwidth==0.1.7
