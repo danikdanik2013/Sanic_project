@@ -6,7 +6,7 @@ asynctest==0.12.2
 backcall==0.1.0
 billiard==3.5.0.5
 celery==4.2.1
-certifi==2018.11.29
+certifi==2022.12.7
 chardet==3.0.4
 cymem==2.0.2
 cytoolz==0.9.0.1
